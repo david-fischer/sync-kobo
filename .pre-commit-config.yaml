@@ -1,49 +1,59 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.1.0
+    rev: v3.3.0
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: requirements-txt-fixer
+      - id: check-toml
+      - id: pretty-format-json
   - repo: https://github.com/psf/black
     rev: 20.8b1
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/pylint
-    rev: pylint-2.5.0
+    rev: pylint-2.6.0
     hooks:
       - id: pylint
         files: sync_kobo
-        args: [--rcfile=./.pylintrc]
+        types: [python]
+#        exclude:
+  - repo: https://github.com/myint/autoflake
+    rev: v1.4
+    hooks:
+      - id: autoflake
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.6.4
+    hooks:
+      - id: isort
+        files: sync_kobo
         types: [python]
 #        exclude:
   - repo: https://github.com/PyCQA/pydocstyle
-    rev: 5.0.2
+    rev: 5.1.1
     hooks:
       - id: pydocstyle
         files: sync_kobo
         exclude: __init__.py
         args: [--add-ignore,"D105,D107"] #Docstrings for __init__ and other magic functions.
   - repo: https://github.com/codespell-project/codespell
-    rev: "v1.17.1"
+    rev: v2.0.0
     hooks:
       - id: codespell
         files: sync_kobo
         types: [text]
         args: [-q, "4",-D, -, -D, .codespell_dict.txt, -H]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.2
+    rev: v2.7.4
     hooks:
-    -   id: pyupgrade
+      - id: pyupgrade
         files: sync_kobo
         types: [python]
-        args: [--py3-plus]
-  - repo: local
+        args: [--py38-plus]
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v0.14.3
     hooks:
-      - id: render_readme
-        name: render_readme.py
-        entry: .utils/render_readme.py
-        language: system
-        always_run: True
-        stages: [push]
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: package.lock.json
