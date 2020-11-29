@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Script to render jinja-blocks in ``README.md``."""
-import glob
 import re
 import subprocess
 
