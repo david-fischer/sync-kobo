@@ -2,7 +2,9 @@
 """This script provides the main function which serves as entry-point for setup.py."""
 import os
 import pathlib
+import platform
 import shutil
+import subprocess
 import sys
 
 import click
@@ -22,6 +24,7 @@ if not __package__:
 # pylint: disable=wrong-import-position
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+OPEN_CMD = "xdg-open" if platform.system() == "Linux" else "open"
 
 from . import CONFIG_PATH, config
 from .fzf_select import fzf_select_multi
@@ -31,7 +34,10 @@ try:
     from .db import choose_shelf, print_books_read
 except sqlalchemy.exc.OperationalError:
     choose_shelf = print_read = lambda: sys.exit(
-        click.echo(f"Could not find kobo database. Check paths in {CONFIG_PATH}") or 1
+        click.echo(
+            "Could not find kobo database. Use sync-kobo --configure to check paths."
+        )
+        or 1
     )
 
 
@@ -43,7 +49,7 @@ def check_connected(kobo_dir):
     if not kobo_dir.exists():
         click.echo(
             f'Kobo reader not found at {config["paths"]["kobo_dir"]}.\n'
-            f"Connect reader or change path in {CONFIG_PATH}."
+            f"Connect reader or change paths using sync-kobo --configure."
         )
         sys.exit(1)
 
@@ -91,21 +97,27 @@ def import_selection(new_books, kobo_book_dir):
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.version_option()
+@click.option(
+    "--configure",
+    is_flag=True,
+    default=False,
+    help="Open config-file in default text-editor.",
+)
 @defaults_from_dict(config["paths"], as_type=pathlib.Path)
 def cli(
+    configure,
     kobo_book_dir=None,
     book_import_dir=None,
     kobo_annot_dir=None,
     annot_export_dir=None,
 ):
     """Sync books and annotations with Kobo e-reader."""
+    if configure:
+        process = subprocess.run([OPEN_CMD, CONFIG_PATH], check=True)
+        sys.exit(process.returncode)
     check_connected(kobo_book_dir)
     backup_db()
     export_annotations(kobo_annot_dir, annot_export_dir)
     new_books = get_new_books(kobo_book_dir, book_import_dir)
     import_selection(new_books, kobo_book_dir)
     print_books_read()
-
-
-if __name__ == "__main__":
-    cli()
