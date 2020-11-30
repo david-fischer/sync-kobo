@@ -6,7 +6,7 @@ from importlib.metadata import metadata
 
 from appdirs import AppDirs
 
-from sync_kobo.utils import dict_prompt, iter_prompt
+from .utils import dict_prompt, iter_prompt
 
 META = dict(metadata(__name__))
 __author__ = META["Author"]
