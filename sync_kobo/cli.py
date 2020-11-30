@@ -121,3 +121,7 @@ def cli(
     new_books = get_new_books(kobo_book_dir, book_import_dir)
     import_selection(new_books, kobo_book_dir)
     print_books_read()
+
+
+if __name__ == "__main__":
+    cli()  # pylint: disable=no-value-for-parameter
