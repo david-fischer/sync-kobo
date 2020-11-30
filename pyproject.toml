@@ -36,6 +36,8 @@ disable = [
     "C0330, C0326", #black compatibility
     "import-error,no-name-in-module,no-member", #compatibility with pre-commit-hook in pycharm
 ]
+good-names = ["i,j,k,v,x,y,id,_"]
+
 [tool.pylint.format]
 max-line-length = "88" #black compatibility
 
