@@ -34,8 +34,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pylint.messages_control]
 disable = [
     "C0330, C0326", #black compatibility
-    "import-error",
-    "no-name-in-module"
+    "import-error,no-name-in-module,no-member", #compatibility with pre-commit-hook in pycharm
 ]
 [tool.pylint.format]
 max-line-length = "88" #black compatibility
