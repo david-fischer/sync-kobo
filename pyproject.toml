@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sync-kobo"
-version = "0.1.0"
+version = "0.2.0"
 description = "Small script to sync book collection with kobo e-reader."
 authors = ["David Fischer <d.fischer.git@posteo.de>"]
 license = "MIT"
