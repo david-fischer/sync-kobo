@@ -23,6 +23,7 @@ repos:
     rev: v1.4
     hooks:
       - id: autoflake
+        files: sync_kobo
   - repo: https://github.com/PyCQA/isort
     rev: 5.6.4
     hooks:
@@ -57,3 +58,4 @@ repos:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
         exclude: package.lock.json
+        files: sync_kobo
