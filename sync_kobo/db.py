@@ -7,7 +7,7 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker
 
 from . import config
-from .fzf_select import fzf_select
+from .fzf_select import fzf_select_single
 
 engine = create_engine(f'sqlite:///{config["paths"]["kobo_db_path"]}')
 meta = MetaData()
@@ -24,7 +24,7 @@ ShelfContent = Base.classes.ShelfContent
 def choose_shelf(file):
     """Choose shelf to add book to."""
     shelves = [q[0] for q in session.query(Shelf.Name)]
-    selection = fzf_select(
+    selection = fzf_select_single(
         shelves,
         header=f"Select shelve for {file}",
         on_none=lambda: False,

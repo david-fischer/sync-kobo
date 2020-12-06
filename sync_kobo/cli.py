@@ -27,7 +27,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 OPEN_CMD = "xdg-open" if platform.system() == "Linux" else "open"
 
 from . import CONFIG_PATH, config
-from .fzf_select import fzf_select_multi
+from .fzf_select import fzf_select
 from .utils import defaults_from_dict, now_str, with_argtypes
 
 try:
@@ -78,7 +78,7 @@ def get_new_books(kobo_book_dir, book_import_dir):
     return [path for path in books if not path.name in kobo_book_names]
 
 
-@with_argtypes(pathlib.Path)
+@with_argtypes(pathlib.Path, pathlib.Path)
 def import_book(new_book, kobo_book_dir):
     """Choose shelf (on e-reader) of book and copy to device."""
     choose_shelf(new_book)
@@ -88,8 +88,11 @@ def import_book(new_book, kobo_book_dir):
 def import_selection(new_books, kobo_book_dir):
     """Prompt user with selection and import selected books."""
     if new_books:
-        selected = fzf_select_multi(
-            new_books, header="Choose books to upload:", on_error=None
+        selected = fzf_select(
+            new_books,
+            header="Choose books to upload:",
+            on_error=lambda *args: [],
+            multi=True,
         )
         for new_book in selected:
             import_book(new_book, kobo_book_dir)
