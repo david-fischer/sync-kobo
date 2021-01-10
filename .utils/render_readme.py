@@ -4,16 +4,20 @@ import re
 import subprocess
 
 import jinja2
+import toml
 
 JINJA_BLOCK_REGEX = r"<!-- jinja-block (\w*)(.*)jinja-block \1-->"
 JINJA_OUT_REGEX = r"<!-- jinja-out %s.*-->"
 
 
 def get_reqs_urls_summaries():
-    print()
-    with open("requirements.txt") as file:
-        req_string = file.read()
-    reqs = re.findall("^[A-Za-z_0-9]+", req_string, flags=re.MULTILINE)
+    with open("pyproject.toml") as file:
+        parsed_toml = toml.load(file)
+    reqs = [
+        req
+        for req in parsed_toml["tool"]["poetry"]["dependencies"].keys()
+        if req != "python"
+    ]
     urls = []
     summaries = []
     for package in reqs:
@@ -97,8 +101,8 @@ def new_main():
     with open(file_name, "r") as file:
         file_string = file.read()
 
+    render_kwargs = get_render_kwargs()
     for name, block in get_jinja_blocks(file_string):
-        render_kwargs = get_render_kwargs()
         out_block = render_single_block(block, **render_kwargs)
         print(name)
         print(out_block)
