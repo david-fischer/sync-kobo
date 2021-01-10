@@ -8,13 +8,11 @@ import subprocess
 import sys
 
 import click
+import sqlalchemy.exc
 
 # FIX: This way the script is both directly callable and usable via import.
 # adding the local version of the package to the beginning of PATH ignores
 # other installed package with same name (only important for development)
-import sqlalchemy.exc
-
-NT = "\n\t"
 if not __package__:
     __package__ = "sync_kobo"  # pylint: disable=redefined-builtin
     pkg_path = pathlib.Path(__file__).absolute().parent.parent
@@ -22,13 +20,9 @@ if not __package__:
 
 # RELATIVE IMPORTS FROM OTHER FILES HERE:
 # pylint: disable=wrong-import-position
-
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
-OPEN_CMD = "xdg-open" if platform.system() == "Linux" else "open"
-
 from . import CONFIG_PATH, config
 from .fzf_select import fzf_select
-from .utils import defaults_from_dict, now_str, with_argtypes
+from .utils import defaults_from_dict, enforce_argtypes, now_str, save_annotations
 
 try:
     from .db import choose_shelf, print_books_read
@@ -39,6 +33,10 @@ except sqlalchemy.exc.OperationalError:
         )
         or 1
     )
+
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+OPEN_CMD = "xdg-open" if platform.system() == "Linux" else "open"
+NT = "\n\t"
 
 
 def check_connected(kobo_dir):
@@ -68,6 +66,7 @@ def backup_db(kobo_db_path=None, db_bkp_dir=None):
 def export_annotations(kobo_annot_dir, annot_export_dir):
     """Export annotations."""
     shutil.copytree(kobo_annot_dir, annot_export_dir, dirs_exist_ok=True)
+    save_annotations(annot_export_dir)
 
 
 def get_new_books(kobo_book_dir, book_import_dir):
@@ -78,7 +77,7 @@ def get_new_books(kobo_book_dir, book_import_dir):
     return [path for path in books if not path.name in kobo_book_names]
 
 
-@with_argtypes(pathlib.Path, pathlib.Path)
+@enforce_argtypes(pathlib.Path, pathlib.Path)
 def import_book(new_book, kobo_book_dir):
     """Choose shelf (on e-reader) of book and copy to device."""
     choose_shelf(new_book)

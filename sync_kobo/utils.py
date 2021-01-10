@@ -1,10 +1,12 @@
 """Utils functions."""
 import inspect
+import pathlib
 from datetime import datetime
 from functools import wraps
 
 import click
 import titlecase
+from bs4 import BeautifulSoup
 
 
 def iter_prompt(old_dict):
@@ -29,7 +31,7 @@ def now_str(time=False):
     return now.strftime(f"%Y-%m-%d{('_%H:%M:%S' if time else '')}")
 
 
-def with_argtypes(*arg_types, **kwarg_types):
+def enforce_argtypes(*arg_types, **kwarg_types):
     """Enforce arg-types for function."""
 
     def inner(func):
@@ -88,14 +90,30 @@ def kwargs_to_flags(**kwargs):
     return " ".join(flag_strings)
 
 
-# def print_types(*args, **kwargs):
-#     print([type(a) for a in args])
-#     print([f"{k}:{type(v)}" for k, v in kwargs.items()])
-#
-#
-# print_types_2 = with_argtypes(str, pathlib.Path, key1=int, key2=pathlib.Path)(
-#     print_types
-# )
-#
-# print_types("asdf", "bdfas", key1="1234", key2="asdf")
-# print_types_2("asdf", "bdfas", key1="1234", key2="asdf")
+def get_annotations(path):
+    """Parse kobos .annot-file and return list of (annotations,comments)."""
+    with open(path) as file:
+        soup = BeautifulSoup(file, "lxml")
+    annotations = soup.select("annotation")
+    annotations = [
+        (
+            tag.target.text.strip(),
+            tag.content.select("text")[0].text if tag.content else "",
+        )
+        for tag in annotations
+    ]
+    return annotations
+
+
+@enforce_argtypes(pathlib.Path)
+def save_annotations(annot_dir):
+    """Extract annotations from .annot files in a dir and save as .txt files."""
+    for path in annot_dir.glob("*.annot"):
+        with open(path.with_suffix(".txt"), "w") as file:
+            notes = [note[0] for note in get_annotations(path)]
+            file.write("\n".join(notes))
+
+
+if __name__ == "__main__":
+    save_annotations("/home/david/Nextcloud/Book-Annotations")
+    # print(get_annotations(path))
