@@ -53,7 +53,6 @@ jinja-block deps-->
  * [click](https://palletsprojects.com/p/click/) - Composable command line interface toolkit
  * [pyfzf](https://github.com/nk412/pyfzf) - Python wrapper for junegunn's fuzzyfinder (fzf)
  * [SQLAlchemy](http://www.sqlalchemy.org) - Database Abstraction Library
- * [toml](https://github.com/uiri/toml) - Python Library for Tom's Obvious, Minimal Language
  * [titlecase](https://github.com/ppannuto/python-titlecase) - Python Port of John Gruber's titlecase.pl
  * [tabulate](https://github.com/astanin/python-tabulate) - Pretty-print tabular data
  * [toolz](https://github.com/pytoolz/toolz/) - List processing tools and functional utilities
