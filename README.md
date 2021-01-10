@@ -2,9 +2,9 @@
 
 ## 🚧 Setup
 
-* install fzf
+* install [fzf](https://github.com/junegunn/fzf)
 ```
-pip install pip install git+https://github.com/david-fischer/sync-kobo.git
+pip install git+https://github.com/david-fischer/sync-kobo.git
 ```
 
 ## 🔧 Usage
